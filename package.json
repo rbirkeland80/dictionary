@@ -1,0 +1,16 @@
+{
+  "name": "dictionary",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/rbirkeland80/dictionary.git",
+  "author": "John B",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.16"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
