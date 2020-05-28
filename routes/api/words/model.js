@@ -8,6 +8,7 @@ const wordSchema = new Schema({
   canUToE: { type: Boolean, default: false },
   description: String,
   examples: [{ type: String }],
+  lastVerifiedAt: Date,
   partOfSpeech: [{
     type: String,
     // adjective, adverb, conjunction, interjection, noun, preposition, pronoun, verb
