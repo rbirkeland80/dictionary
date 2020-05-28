@@ -57,8 +57,9 @@ class BaseCrud {
 
   getAllEntries(req, res) {
     const params = req.query;
-    const limit = Number(params.rowsPerPage) || 100;
-    const skip = Number(params.pageNum) * Number(params.rowsPerPage) - Number(params.rowsPerPage) || 0;
+    const limit = Number(params.limit) || 100;
+    const skip = Number(params.skip) || 0;
+    const fields = (params.fields && params.fields.join(' ')) || '';
     let totalCount = 0;
 
     return this.model.countDocuments()
@@ -69,10 +70,10 @@ class BaseCrud {
 
         totalCount = data;
 
-        return this.model.find().select('value canEToU canUToE').limit(limit).skip(skip)
+        return this.model.find().select(fields).limit(limit).skip(skip)
       })
       .then(data => {
-        res.json({ list: data, count: totalCount });
+        res.json({ list: data, count: totalCount, limit, skip });
       })
       .catch(error => {
         handleErrorResponse(error, res);
