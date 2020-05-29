@@ -8,6 +8,7 @@ const wordSchema = new Schema({
   canUToE: { type: Boolean, default: false },
   description: String,
   examples: [{ type: String }],
+  lastVerifiedAt: Date,
   partOfSpeech: [{
     type: String,
     // adjective, adverb, conjunction, interjection, noun, preposition, pronoun, verb
@@ -17,7 +18,7 @@ const wordSchema = new Schema({
   tags: [{ type: String }],
   transcription: String,
   translation: String,
-  value:  { type: String, required: true, unique: true },
+  word:  { type: String, required: true, unique: true },
 }, { timestamps: true });
 
 const Word = mongoose.model('Word', wordSchema);

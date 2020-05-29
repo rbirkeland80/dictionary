@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -34,6 +35,7 @@ class Server {
   initExpressMiddleware() {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(cors({ origin: 'http://localhost:3000' }));
   }
 
   initRoutes() {
