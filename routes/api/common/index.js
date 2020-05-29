@@ -57,7 +57,7 @@ class BaseCrud {
 
   getAllEntries(req, res) {
     const params = req.query;
-    const limit = Number(params.limit) || 100;
+    const limit = Number(params.limit) || 50;
     const skip = Number(params.skip) || 0;
     const fields = (params.fields && params.fields.join(' ')) || '';
     let totalCount = 0;
@@ -94,16 +94,38 @@ class BaseCrud {
       });
   }
 
-  saveNewEntry(req, res) {
-    const collection = new this.model(req.body);
+  async saveNewEntry(req, res) {
+    const { data } = req.body;
+    const resData = {
+      errors: [],
+      success: []
+    };
+    let currentItem = null;
 
-    return collection.save()
-      .then(collection => {
-        res.json(collection);
-      })
-      .catch(error => {
-        handleErrorResponse(error, res);
-      });
+    if (!data || !data.length) {
+      res.status(422).send('Data is missing');
+
+      return;
+    }
+
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i];
+
+      try {
+        currentItem = item;
+        const collection = new this.model(item);
+        const result = await collection.save();
+        resData.success.push(result);
+      } catch(error) {
+        resData.errors.push({
+          item: currentItem,
+          error
+        });
+      }
+    }
+
+    const code = resData.errors.length ? 422 : 200;
+    res.status(code).json(resData);
   }
 
   updateEntryById(req, res) {

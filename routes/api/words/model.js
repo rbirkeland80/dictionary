@@ -18,7 +18,7 @@ const wordSchema = new Schema({
   tags: [{ type: String }],
   transcription: String,
   translation: String,
-  value:  { type: String, required: true, unique: true },
+  word:  { type: String, required: true, unique: true },
 }, { timestamps: true });
 
 const Word = mongoose.model('Word', wordSchema);
