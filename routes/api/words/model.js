@@ -14,6 +14,7 @@ const wordSchema = new Schema({
     // adjective, adverb, conjunction, interjection, noun, preposition, pronoun, verb
     enum: ['adj', 'adv', 'conj', 'interj', 'n', 'prep', 'pron', 'v']
   }],
+  plural: String,
   synonyms: [{ type: String }],
   tags: [{ type: String }],
   transcription: String,
