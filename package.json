@@ -12,6 +12,7 @@
     "mongoose": "^5.9.16"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "start:prod": "NODE_ENV=prod node index.js"
   }
 }

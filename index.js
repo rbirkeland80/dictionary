@@ -16,10 +16,11 @@ class Server {
 
   initDB() {
     const configDB = require('./config/database.js');
+    const url = process.env.NODE_ENV === 'prod' ? configDB.PROD : configDB.TEST;
 
     mongoose.Promise = global.Promise;
     mongoose
-      .connect(configDB.url, { useNewUrlParser: true })
+      .connect(url, { useNewUrlParser: true })
       .catch(er => {
         console.log('Troubles with db connection. Please double check your settings', er);
         this.server && this.server.close();
