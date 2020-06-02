@@ -17,6 +17,7 @@ const wordSchema = new Schema({
   plural: String,
   synonyms: [{ type: String }],
   tags: [{ type: String }],
+  toVerifyNextTime: { type: Boolean, default: false },
   transcription: String,
   translation: String,
   word:  { type: String, required: true, unique: true },

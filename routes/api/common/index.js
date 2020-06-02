@@ -129,7 +129,9 @@ class BaseCrud {
   }
 
   updateEntryById(req, res) {
-    return this.model.findOneAndUpdate({ _id: req.params.id }, { new: true })
+    const data = req.body;
+
+    return this.model.findOneAndUpdate({ _id: req.params.id }, { ...data }, { new: true })
       .then(data => {
         if (data === null) {
           return res.status(204).send('There is nothing to update');
