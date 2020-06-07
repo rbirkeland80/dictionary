@@ -1,17 +1,3 @@
-const defaultErrorMsg = 'Unexpected error happened. Please try again later.';
-
-function handleErrorResponse (error, res) {
-  const code = setResponseCode(error);
-  const msg = error.message || defaultErrorMsg;
-
-  if (error.code === 412) {
-    // preConditionFailed
-    error.message = 'System was not able to save your request. Please make sure that your are properly logged in the system.';
-  }
-
-  res.status(code).send(msg);
-};
-
 function setResponseCode (error) {
   if (error.code >= 400 && error.code <= 599) {
     return error.code;
@@ -31,6 +17,7 @@ function setResponseCode (error) {
 class BaseCrud {
   constructor(model) {
     this.model = model;
+    this.defaultErrorMsg = 'Unexpected error happened. Please try again later.';
   }
 
   checkIdParam(req, res, next, id) {
@@ -51,7 +38,7 @@ class BaseCrud {
         res.send(data);
       })
       .catch(error => {
-        handleErrorResponse(error, res);
+        this.handleErrorResponse(error, res);
       });
   }
 
@@ -70,13 +57,18 @@ class BaseCrud {
 
         totalCount = data;
 
-        return this.model.find().select(fields).limit(limit).skip(skip)
+        return this.model
+          .find()
+          .select(fields)
+          .sort({ toVerifyNextTime: -1, createdAt: -1 })
+          .limit(limit)
+          .skip(skip);
       })
       .then(data => {
         res.json({ list: data, count: totalCount, limit, skip });
       })
       .catch(error => {
-        handleErrorResponse(error, res);
+        this.handleErrorResponse(error, res);
       });
   }
 
@@ -90,9 +82,21 @@ class BaseCrud {
         res.json(data);
       })
       .catch(error => {
-        handleErrorResponse(error, res);
+        this.handleErrorResponse(error, res);
       });
   }
+
+  handleErrorResponse (error, res) {
+    const code = setResponseCode(error);
+    const msg = error.message || defaultErrorMsg;
+  
+    if (error.code === 412) {
+      // preConditionFailed
+      error.message = 'System was not able to save your request. Please make sure that your are properly logged in the system.';
+    }
+  
+    res.status(code).send(msg);
+  };
 
   async saveNewEntry(req, res) {
     const { data } = req.body;
@@ -131,7 +135,7 @@ class BaseCrud {
   updateEntryById(req, res) {
     const data = req.body;
 
-    return this.model.findOneAndUpdate({ _id: req.params.id }, { ...data }, { new: true })
+    return this.model.findOneAndUpdate({ _id: req.params.id }, { ...data }, { new: true, useFindAndModify: false })
       .then(data => {
         if (data === null) {
           return res.status(204).send('There is nothing to update');
@@ -140,7 +144,7 @@ class BaseCrud {
         res.json(data);
       })
       .catch(error => {
-        handleErrorResponse(error, res);
+        this.handleErrorResponse(error, res);
       });
   }
 };
