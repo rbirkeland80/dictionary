@@ -23,7 +23,7 @@ class WordCrud extends BaseCrud {
       fields
     } = req.body;
     const project = {};
-    const createdAtDirection = type === QUIZ_TYPE_NEWEST ? -1 : 1;
+    const lastVerifiedAtDirection = type === QUIZ_TYPE_NEWEST ? -1 : 1;
     fields.forEach(prop => project[prop] = 1);
 
     const includeToVerifySet = includeToVerify
@@ -33,7 +33,7 @@ class WordCrud extends BaseCrud {
       ? [{ $sample: { size: maxCount || 50 } }]
       : [];
     const sortSet = type === QUIZ_TYPE_NEWEST || type === QUIZ_TYPE_OLDEST
-      ? [{ $sort: { createdAt: createdAtDirection } }]
+      ? [{ $sort: { lastVerifiedAt: lastVerifiedAtDirection } }]
       : [];
 
     const sort = sortProp && sortDirection
@@ -59,6 +59,21 @@ class WordCrud extends BaseCrud {
       ]);
 
       res.json({ list: data, count, limit, skip });
+    } catch(error) {
+      this.handleErrorResponse(error, res);
+    }
+  }
+
+  async updateEntries(req, res) {
+    const { ids } = req.body;
+
+    try {
+      const data = await this.model.updateMany(
+        { _id: { $in: ids } },
+        { $set: { lastVerifiedAt: new Date() } }
+      );
+
+      res.json(data);
     } catch(error) {
       this.handleErrorResponse(error, res);
     }
