@@ -14,10 +14,12 @@ class WordCrud extends BaseCrud {
   async generateQuiz(req, res) {
     const {
       includeToVerify,
-      maxCount = 50,
+      maxCount,
       type = QUIZ_TYPE_NEWEST,
       limit = 50,
       skip = 0,
+      sortProp,
+      sortDirection,
       fields
     } = req.body;
     const project = {};
@@ -28,30 +30,33 @@ class WordCrud extends BaseCrud {
       ? []
       : [{ $match: { toVerifyNextTime: { $ne: true } } }];
     const randomSet = type === QUIZ_TYPE_RANDOM
-      ? [{ $sample: { size: maxCount } }]
+      ? [{ $sample: { size: maxCount || 50 } }]
       : [];
     const sortSet = type === QUIZ_TYPE_NEWEST || type === QUIZ_TYPE_OLDEST
-      ? [{ $sort: { createdAt : createdAtDirection } }]
+      ? [{ $sort: { createdAt: createdAtDirection } }]
+      : [];
+
+    const sort = sortProp && sortDirection
+      ? [{ $sort: { [`${sortProp}`]: sortDirection === 'asc' ? 1: -1 } }]
       : [];
 
     try {
-      const totalCount = await this.model.aggregate([
+      const totalCountAggr = await this.model.aggregate([
         ...includeToVerifySet,
         { $count: 'count' }
       ]);
-
+      const totalCount = totalCountAggr[0] && totalCountAggr[0].count;
       const count = totalCount <= maxCount ? totalCount : maxCount;
 
       const data = await this.model.aggregate([
         ...includeToVerifySet,
         ...randomSet,
         ...sortSet,
-        { $limit : limit > count ? count : limit },
-        { $skip : skip },
-        { $project : project }
+        { $skip: skip },
+        { $limit: limit > count ? count : limit},
+        { $project: project },
+        ...sort
       ]);
-
-      console.log(data);
 
       res.json({ list: data, count, limit, skip });
     } catch(error) {
@@ -64,6 +69,7 @@ const wordCrud = new WordCrud(Word);
 
 routes.route('/')
   .get((req, res) => wordCrud.getAllEntries(req, res))
+  .put((req, res) => wordCrud.updateEntries(req, res))
   .post((req, res) => wordCrud.saveNewEntry(req, res));
 
 routes.route('/quiz')
