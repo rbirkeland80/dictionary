@@ -18,6 +18,8 @@ class WordCrud extends BaseCrud {
       type = QUIZ_TYPE_NEWEST,
       limit = 50,
       skip = 0,
+      sortProp,
+      sortDirection,
       fields
     } = req.body;
     const project = {};
@@ -31,7 +33,11 @@ class WordCrud extends BaseCrud {
       ? [{ $sample: { size: maxCount || 50 } }]
       : [];
     const sortSet = type === QUIZ_TYPE_NEWEST || type === QUIZ_TYPE_OLDEST
-      ? [{ $sort: { createdAt : createdAtDirection } }]
+      ? [{ $sort: { createdAt: createdAtDirection } }]
+      : [];
+
+    const sort = sortProp && sortDirection
+      ? [{ $sort: { [`${sortProp}`]: sortDirection === 'asc' ? 1: -1 } }]
       : [];
 
     try {
@@ -46,9 +52,10 @@ class WordCrud extends BaseCrud {
         ...includeToVerifySet,
         ...randomSet,
         ...sortSet,
-        { $skip : skip },
-        { $limit : limit },
-        { $project : project }
+        { $skip: skip },
+        { $limit: limit > count ? count : limit},
+        { $project: project },
+        ...sort
       ]);
 
       res.json({ list: data, count, limit, skip });
@@ -62,6 +69,7 @@ const wordCrud = new WordCrud(Word);
 
 routes.route('/')
   .get((req, res) => wordCrud.getAllEntries(req, res))
+  .put((req, res) => wordCrud.updateEntries(req, res))
   .post((req, res) => wordCrud.saveNewEntry(req, res));
 
 routes.route('/quiz')
