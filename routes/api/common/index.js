@@ -47,6 +47,11 @@ class BaseCrud {
     const limit = Number(params.limit) || 50;
     const skip = Number(params.skip) || 0;
     const fields = (params.fields && params.fields.join(' ')) || '';
+    const sortProp = params.sortProp;
+    const sortDirection = params.sortDirection;
+    const sort = sortProp && sortDirection
+      ? { [`${sortProp}`]: sortDirection === 'asc' ? 1: -1 }
+      : { toVerifyNextTime: -1, createdAt: -1 };
     let totalCount = 0;
 
     return this.model.countDocuments()
@@ -60,7 +65,7 @@ class BaseCrud {
         return this.model
           .find()
           .select(fields)
-          .sort({ toVerifyNextTime: -1, createdAt: -1 })
+          .sort(sort)
           .limit(limit)
           .skip(skip);
       })
