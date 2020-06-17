@@ -9,12 +9,14 @@ const wordSchema = new Schema({
   description: String,
   examples: [{ type: String }],
   lastVerifiedAt: Date,
-  partOfSpeech: [{
+  partOfSpeech: {
     type: String,
     // adjective, adverb, conjunction, interjection, noun, phrasal verb, preposition, pronoun, verb
     enum: ['adj', 'adv', 'conj', 'interj', 'n', 'ph v', 'prep', 'pron', 'v']
-  }],
+  },
+  pastParticiple: String,
   plural: String,
+  simplePast: String,
   synonyms: [{ type: String }],
   tags: [{ type: String }],
   toVerifyNextTime: { type: Boolean, default: false },
