@@ -11,8 +11,8 @@ const wordSchema = new Schema({
   lastVerifiedAt: Date,
   partOfSpeech: {
     type: String,
-    // adjective, adverb, conjunction, interjection, noun, phrasal verb, preposition, pronoun, verb
-    enum: ['adj', 'adv', 'conj', 'interj', 'n', 'ph v', 'prep', 'pron', 'v']
+    // adjective, adverb, conjunction, interjection, noun, numeral, phrase, phrasal verb, preposition, pronoun, verb
+    enum: ['adj', 'adv', 'conj', 'interj', 'n', 'num', 'ph', 'ph v', 'prep', 'pron', 'v']
   },
   pastParticiple: String,
   plural: String,
