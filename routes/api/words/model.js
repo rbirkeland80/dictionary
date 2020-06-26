@@ -22,7 +22,7 @@ const wordSchema = new Schema({
   toVerifyNextTime: { type: Boolean, default: false },
   transcription: String,
   translation: String,
-  word:  { type: String, required: true, unique: true },
+  word: { type: String, required: true, unique: true }
 }, { timestamps: true });
 
 const Word = mongoose.model('Word', wordSchema);
