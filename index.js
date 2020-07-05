@@ -19,9 +19,8 @@ class Server {
   }
 
   initDB() {
-    console.log('************* process.env: ', process.env);
     const configDB = require('./config/database.js');
-    const url = process.env.NODE_ENV === 'prod' ? configDB.PROD : configDB.TEST;
+    const url = process.env.NODE_ENV === 'production' ? configDB.PROD : configDB.TEST;
 
     mongoose.Promise = global.Promise;
     mongoose
