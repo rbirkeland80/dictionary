@@ -36,6 +36,8 @@ class Server {
   }
 
   initExpressMiddleware() {
+    const configClient = require('./config/client.js');
+    const url = process.env.NODE_ENV === 'production' ? configClient.PROD : configClient.LOCAL;
     app.use(session({
       secret: 'secret',
       saveUninitialized: true,
@@ -43,7 +45,7 @@ class Server {
     }));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cors({ origin: 'http://localhost:3000' }));
+    app.use(cors({ origin: url }));
     app.use(passport.initialize());
     app.use(passport.session());
   }
