@@ -1,2 +1,2 @@
 # dictionary
-test
+client: https://e-dictionary.vercel.app
